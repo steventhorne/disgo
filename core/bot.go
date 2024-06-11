@@ -62,10 +62,11 @@ func (b *Bot) OpenAndRun() {
 }
 
 func (b *Bot) RegisterCommands() []error {
+	discordAppId := os.Getenv("DISCORD_APPLICATION_ID")
 	errs := make([]error, 0, len(b.router.commands))
 
 	existingCmds := make(map[string]string, len(b.router.commands))
-	cmds, err := b.session.ApplicationCommands(os.Getenv("DISCORD_APPLICATION_ID"), "")
+	cmds, err := b.session.ApplicationCommands(discordAppId, "")
 	if err != nil {
 		return []error{err}
 	}
@@ -76,7 +77,7 @@ func (b *Bot) RegisterCommands() []error {
 	for _, c := range b.router.commands {
 		if existingID, ok := existingCmds[c.Name]; ok {
 			slog.Info("Updating command", "name", c.Name)
-			_, err = b.session.ApplicationCommandEdit(os.Getenv("DISCORD_APPLICATION_ID"), "", existingID, &c.ApplicationCommand)
+			_, err = b.session.ApplicationCommandEdit(discordAppId, "", existingID, &c.ApplicationCommand)
 			if err != nil {
 				errs = append(errs, err)
 			}
@@ -84,7 +85,7 @@ func (b *Bot) RegisterCommands() []error {
 			continue
 		}
 		slog.Info("Creating command", "name", c.Name)
-		_, err = b.session.ApplicationCommandCreate(os.Getenv("DISCORD_APPLICATION_ID"), "", &c.ApplicationCommand)
+		_, err = b.session.ApplicationCommandCreate(discordAppId, "", &c.ApplicationCommand)
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -93,7 +94,7 @@ func (b *Bot) RegisterCommands() []error {
 
 	for name, ID := range existingCmds {
 		slog.Info("Deleting command", "name", name)
-		err = b.session.ApplicationCommandDelete(os.Getenv("DISCORD_APPLICATION_ID"), "", ID)
+		err = b.session.ApplicationCommandDelete(discordAppId, "", ID)
 		if err != nil {
 			errs = append(errs, err)
 		}
