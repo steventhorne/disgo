@@ -30,6 +30,22 @@ func newRouter() router {
 					})
 				},
 			},
+			"snap": {
+				ApplicationCommand: discordgo.ApplicationCommand{
+					Name:        "snap",
+					Description: "Get a marvel snap card",
+					Type:        discordgo.ChatApplicationCommand,
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "name",
+							Description: "The name of the card",
+							Required:    true,
+						},
+					},
+				},
+				Handler: snapHandler,
+			},
 		},
 	}
 }
